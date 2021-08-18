@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Giphy</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="./index.html">Giphy</a>
+      
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="./saved.html">Saved</a>
+          </li>
+         
+        </ul>
+       
+      </div>
+    </div>
+  </nav>
+  <div class="container m-5">
+      <label for="Search">Search Gif</label>
+      <form class="d-flex">
+        
+        <input id="gif" class="form-control me-2" type="search" placeholder="" aria-label="Search">
+        <button id="search" class="btn btn-outline-success" type="submit">Search</button>
+      </form>
+    
+  </div>
+  <div   class="container">
+    <div class="row">
+      <div id = "gifs" class="col-12">
+        
+      </div>
+    </div>
+   
+  </div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"
+  integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+
+  <script>
+    let savedGifs = JSON.parse(localStorage.getItem('savedGifs')) ||[]
+
+    document.getElementById("search").addEventListener('click',event =>{
+      event.preventDefault()
+      let gif = document.getElementById('gif').value  
+      console.log(gif)
+
+      axios.get(`https://api.giphy.com/v1/gifs/search?api_key=0xGcvGHCWVAhk5vGxzzz9DrdVL9R6sHH&limit=20&offset=0&q=${gif}`)
+      .then(res =>{
+       
+        let data = res.data.data
+        console.log(data)
+        document.getElementById('gifs').innerHTML =''
+        data.forEach(element => {
+        let card = document.createElement('div')
+        card.innerHTML=`
+          <div id = ${element.id} class="card" style="width: 100%;">
+          <img src="${element.images.downsized.url}" class="card-img-top" alt="...">
+          <div class="card-body">
+          <h5 class="card-title">${element.title}</h5>
+    
+          <a href="#" class="btn btn-primary save">Save Gif</a>
+           </div>
+          </div>
+
+        `
+
+          document.getElementById('gifs').append(card)
+        });
+       
+
+      })
+      .catch(err=>console.error(err))
+
+     
+    })
+
+    document.addEventListener('click',event =>{
+      if(event.target.classList.contains('save'))
+      {
+        event.target.parentNode.parentNode.remove()
+
+        let id =(event.target.parentNode.parentNode.id)
+        savedGifs.push(id)
+        localStorage.setItem('savedGifs', JSON.stringify(savedGifs))
+      }
+    })
+  </script>
+</body>
+</html>
